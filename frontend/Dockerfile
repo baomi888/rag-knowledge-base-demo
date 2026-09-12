@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 先装依赖（利用 Docker 缓存）
+COPY package*.json ./
+RUN npm install
+
+# 复制源码
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

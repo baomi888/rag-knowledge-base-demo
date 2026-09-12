@@ -16,3 +16,16 @@ venv/
 # ============ IDE / 编辑器 ============
 .idea/
 .vscode/
+
+# ============ Next.js 前端 ============
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ============ 上传文件（可重建，不入库） ============
+data/uploads/
