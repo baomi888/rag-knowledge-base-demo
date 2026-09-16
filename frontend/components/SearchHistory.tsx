@@ -137,7 +137,12 @@ export function SearchHistory() {
                 }
               >
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                  <span>{item.msg.role === "user" ? "🐰" : "🐱"}</span>
+                  {item.msg.role === "user" ? (
+                    <span>🐰</span>
+                  ) : (
+                    /* AI 头像：小猪图片缩略版 */
+                    <img src="/pig.jpg" alt="AI" className="inline-block h-3.5 w-3.5 rounded-full object-cover align-[-2px]" />
+                  )}
                   <Badge variant="secondary">{AREA_LABEL[item.area]}</Badge>
                   {item.convTitle && (
                     <span className="max-w-[10rem] truncate">「{item.convTitle}」</span>

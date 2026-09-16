@@ -219,8 +219,9 @@ export function MessageBubble({
         (highlighted ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background" : "")
       }
     >
-      <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-base shadow-sm">
-        🐱
+      <div className="mt-0.5 h-8 w-8 overflow-hidden rounded-full bg-accent/15 shadow-sm">
+        {/* AI 头像：自定义小猪图片（frontend/public/pig.jpg），放大裁边保持与空状态一致 */}
+        <img src="/pig.jpg" alt="AI" className="h-full w-full scale-[1.45] object-cover" />
       </div>
       <div className="ml-2 flex max-w-[80%] flex-col gap-1.5">
         <div className="rounded-3xl rounded-tl-md border border-border bg-card px-4 py-2.5 shadow-[0_4px_14px_rgba(0,0,0,0.06)]">

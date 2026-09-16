@@ -49,6 +49,79 @@ export async function buildIndex(opts: {
   return (await res.json()) as BuildIndexResponse;
 }
 
+export interface UrlIngestResponse {
+  chunks: number;
+  title: string;
+  chars: number;
+  file: string;
+  kb: KBKey;
+  status: string;
+}
+
+/** 网页导入（ima 式）：抓取 URL 正文 → 入指定知识库并重建索引 */
+export async function importFromUrl(opts: {
+  url: string;
+  kb: KBKey;
+}): Promise<UrlIngestResponse> {
+  const res = await fetch(`${BASE}/api/index/url`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: opts.url, kb: opts.kb }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as UrlIngestResponse;
+}
+
+export interface SearchIngestResponse {
+  chunks: number;
+  articles: number;
+  query: string;
+  files: string[];
+  kb: KBKey;
+  status: string;
+}
+
+export interface SearchPreviewResult {
+  title: string;
+  url: string;
+  chars: number;
+  preview: string;
+}
+
+export interface SearchPreviewResponse {
+  query: string;
+  results: SearchPreviewResult[];
+}
+
+/** 关键词搜索预览：只返回摘要列表，不入库（先看后导） */
+export async function searchPreview(opts: {
+  query: string;
+  max_results?: number;
+}): Promise<SearchPreviewResponse> {
+  const res = await fetch(`${BASE}/api/index/search/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: opts.query, max_results: opts.max_results ?? 10 }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as SearchPreviewResponse;
+}
+
+/** 导入用户勾选的资料（按 URL 抓正文合并入库） */
+export async function searchImportUrls(opts: {
+  query: string;
+  kb: KBKey;
+  urls: string[];
+}): Promise<SearchIngestResponse> {
+  const res = await fetch(`${BASE}/api/index/search/import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: opts.query, kb: opts.kb, urls: opts.urls }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as SearchIngestResponse;
+}
+
 export async function deleteFile(opts: {
   kb: KBKey;
   file: string;

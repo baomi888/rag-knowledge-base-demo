@@ -99,12 +99,13 @@ export function ChatArea() {
       <div ref={scrollRef} onScroll={onScroll} className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
           /* 马卡龙可爱风空状态：小猫打招呼 + 示例问题引导 */
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-5xl shadow-[0_6px_20px_rgba(244,143,177,0.18)]">
-              🐱
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+            {/* 空状态大头像：小猪图片（frontend/public/pig.jpg） */}
+            <div className="h-28 w-28 overflow-hidden rounded-full bg-primary/10 shadow-[0_6px_20px_rgba(244,143,177,0.18)]">
+              <img src="/pig.jpg" alt="小猪助手" className="h-full w-full object-cover" />
             </div>
             <p className="text-base font-medium text-foreground">
-              喵~ 我是你的知识库小助手！
+              哼哼~ 我是小猪知识库助手！
             </p>
             <p>选好知识库就可以提问啦</p>
             <div className="flex flex-wrap justify-center gap-2">
