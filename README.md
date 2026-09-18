@@ -4,7 +4,7 @@
 
 **基于 LangChain + Chroma + DeepSeek 的检索增强生成（RAG）知识库系统**
 
-从预处理脚本到生产级 Web 应用的完整演进：控制台 → 前后端分离 · SSE 流式 · 多知识库 · 参数对比实验平台
+从预处理脚本到生产级 Web 应用的完整演进：控制台 → 前后端分离 · SSE 流式 · 多知识库 · 参数对比 · 联网资料导入
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-0.3.x-1C3C3C?logo=langchain&logoColor=white)
@@ -25,7 +25,7 @@
 |---|---|---|
 | **预处理脚本** | `preprocess.py` | 理解切片/向量化原理，观察向量输出 |
 | **控制台问答** | `rag_console.py` | 快速验证检索与提示词约束 |
-| **Web 应用** | `backend/` + `frontend/` | 完整产品体验：流式问答、参数实验、多知识库管理 |
+| **Web 应用** | `backend/` + `frontend/` | 完整产品体验：流式问答、参数实验、多知识库管理、联网资料导入 |
 
 ### 系统架构
 
@@ -58,6 +58,7 @@
 - **🌊 SSE 流式问答**：逐字渲染，支持发送中中断（客户端断开自动终止生成）
 - **🧪 参数实验平台**：chunk_size / chunk_overlap / top_k 实时可调，左右双栏对比模式同题双参出结果——直观理解切片粒度对检索的影响
 - **📚 多知识库**：main / left / right 三库隔离（独立 Chroma collection + 参数 + 对话历史），拖拽上传自动建库
+- **🌐 联网资料导入**：粘贴 URL 直接抓取正文入库；或输入关键词聚合 Bing + 搜狗双引擎搜索——先预览各篇标题/来源/摘要，勾选后导入，每篇资料单独成文件（可预览、可删除），自动过滤词典站与反爬站
 - **📎 引用溯源**：回答内 `[1][2]` 角标可点击，弹窗展示来源文件、页码、相似度分数与原文片段定位
 - **🛡️ 工程化细节**：拒答约束（资料不足明确说不足而非编造）、全中文异常提示（401/402/429/网络）、密钥零硬编码
 - **🎨 马卡龙 UI**：奶油波点背景、大脑圆角气泡、Baloo 2 圆体 + 苹果式字重层次、深浅双主题
@@ -129,6 +130,11 @@ python rag_console.py --rebuild      # Demo5：控制台 RAG 问答（quit 退�
 |---|---|---|
 | `GET` | `/api/index/status` | 三库状态（片段数/参数/文件列表） |
 | `POST` | `/api/index/build` | 建库（multipart，支持文件上传，按 kb 指定目标库） |
+| `POST` | `/api/index/url` | 抓取单个网页正文导入知识库 |
+| `POST` | `/api/index/search/preview` | 关键词聚合 Bing + 搜狗搜索，返回各篇标题/来源/摘要（不入库，先看后导） |
+| `POST` | `/api/index/search/import` | 导入用户勾选的资料（每篇单独成 txt，含来源 URL） |
+| `DELETE` | `/api/index/file` | 移除文件并自动重建索引 |
+| `GET` | `/api/index/file/content` | 预览知识库文件原文（超长自动截断） |
 | `POST` | `/api/chat/stream` | SSE 流式问答（`status` → `token`* → `done`） |
 | `POST` | `/api/compare` | 双参数对比问答，左右独立返回 |
 | `GET` | `/api/config/defaults` | 默认参数与上传限制 |
@@ -172,6 +178,7 @@ rag-knowledge-base-demo/
 | `langchain-core 1.x` 冲突 | 最新 `langchain-chroma` 会拉取 core 1.x 与 `langchain 0.3` 冲突，锁定 `langchain-chroma<0.3` + `chromadb<0.6` |
 | `StopIteration interacts badly with generators` | 线程池中 `next(gen)` 的 StopIteration 不能抛进 asyncio Future，改用哨兵值 `next(gen, _SENTINEL)` |
 | Gradio 5.50 兼容 | `gr.Divider` 被移除、`js` 参数迁移至 `launch()`、自定义 theme 字体崩溃——Web 版最终改用 Next.js 方案 |
+| 百度反爬触发安全验证 | 无 Cookie 程序化访问经常被弹验证页，搜索改为 Bing + 搜狗双引擎聚合；搜狗 `/link` 跳转无 302，需从页面 `window.location.replace("...")` 提取真实地址 |
 
 ## 🔒 安全说明
 
@@ -184,6 +191,7 @@ rag-knowledge-base-demo/
 - [x] **Week 4** · RAG 预处理链路（加载 / 切片 / 向量化）
 - [x] **Week 5** · 控制台 RAG 问答（Chroma / 检索 / 提示词 / DeepSeek）
 - [x] **Week 6** · Web 版（FastAPI + Next.js · SSE 流式 · 对比模式 · 多知识库）
+- [x] **Week 7** · 联网资料导入（URL 抓取 · Bing/搜狗双引擎搜索预览 · 勾选导入）
 - [ ] 混合检索（BM25 + 向量）与重排序
 - [ ] 知识库文件级增量更新
 - [ ] 对话记忆与多轮追问
